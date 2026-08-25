@@ -2,292 +2,224 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Transmission 51-B</title>
 <style>
-  :root{
-    --bg:#050505;
-    --panel:#0a0a0a;
-    --red:#c81616;
-    --red2:#7a0d0d;
-    --text:#d7d7d7;
-    --dim:#7f7f7f;
-  }
+:root{
+  --bg:#050505;
+  --panel:#0b0b0b;
+  --red:#ff2626;
+  --red2:#8b0e0e;
+  --text:#e7e7e7;
+  --dim:#8a8a8a;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:radial-gradient(circle at center, rgba(120,0,0,.07), transparent 38%),#050505;
+  color:var(--text);
+  font-family:"Courier New",monospace;
+  overflow:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.022) 0 1px,transparent 2px 4px);
+  opacity:.28;
+  z-index:10;
+}
+.wrap{
+  width:min(900px,94vw);
+  height:100dvh;
+  margin:auto;
+  padding:10px 0;
+  display:flex;
+  align-items:center;
+}
+.panel{
+  width:100%;
+  max-height:calc(100dvh - 20px);
+  overflow:hidden;
+  position:relative;
+  border:1px solid #2c2c2c;
+  background:linear-gradient(180deg,rgba(18,18,18,.98),rgba(5,5,5,.99));
+  padding:16px 18px 14px;
+  box-shadow:0 0 40px rgba(0,0,0,.85);
+}
+.panel::after{
+  content:"CLASSIFIED";
+  position:absolute;
+  top:10px;
+  right:12px;
+  border:2px solid var(--red2);
+  color:var(--red);
+  padding:3px 7px;
+  font-size:11px;
+  font-weight:bold;
+  transform:rotate(2deg);
+  letter-spacing:.12em;
+}
+.kicker{
+  color:var(--dim);
+  font-size:10px;
+  letter-spacing:.08em;
+  margin-bottom:6px;
+}
+h1{
+  margin:0;
+  padding-right:105px;
+  font-size:clamp(26px,7vw,48px);
+  line-height:.9;
+  letter-spacing:-.04em;
+  text-transform:uppercase;
+}
+.sub{
+  margin-top:5px;
+  color:var(--red);
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px 12px;
+  margin-top:12px;
+  padding:9px 0;
+  border-top:1px solid #282828;
+  border-bottom:1px solid #282828;
+  font-size:11px;
+  color:#999;
+}
+.meta b{color:#ddd;font-weight:normal}
+.controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:12px 0 8px;
+  flex-wrap:wrap;
+}
+button{
+  border:1px solid var(--red);
+  background:#160606;
+  color:#fff;
+  padding:11px 13px;
+  font:700 12px "Courier New",monospace;
+  letter-spacing:.09em;
+  cursor:pointer;
+}
+.status{
+  font-size:12px;
+  color:#858585;
+}
+.status.live{
+  color:#ff3434;
+  font-weight:bold;
+  animation:pulse .9s infinite;
+}
+@keyframes pulse{50%{opacity:.3}}
 
-  *{box-sizing:border-box}
+.alert{
+  margin-top:8px;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:1px solid #242424;
+  background:#020202;
+  color:#7f7f7f;
+  padding:10px 12px;
+  font-size:13px;
+  line-height:1.25;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.alert.hot{
+  color:#fff;
+  border-color:#7f0f0f;
+  background:#130303;
+  font-size:clamp(18px,5vw,30px);
+  font-weight:bold;
+  text-shadow:0 0 14px rgba(255,38,38,.35);
+}
+.alert.critical{
+  color:#fff;
+  border-color:#ff2626;
+  background:#240000;
+  font-size:clamp(22px,6vw,38px);
+  font-weight:bold;
+  animation:throb .45s infinite alternate;
+}
+@keyframes throb{
+  from{transform:scale(1);box-shadow:0 0 0 rgba(255,0,0,0)}
+  to{transform:scale(1.02);box-shadow:0 0 28px rgba(255,0,0,.18)}
+}
 
-  html,body{
-    margin:0;
-    min-height:100%;
-    background:
-      radial-gradient(circle at center, rgba(120,0,0,.08), transparent 40%),
-      #050505;
-    color:var(--text);
-    font-family:"Courier New", monospace;
-    overflow-x:hidden;
-  }
+.terminal{
+  margin-top:8px;
+  height:118px;
+  overflow:hidden;
+  border:1px solid #222;
+  background:#010101;
+  padding:9px 10px;
+  color:#868686;
+  font-size:10px;
+  line-height:1.35;
+}
+.termline{margin:0 0 2px}
+.termline.danger{color:#ff3030}
+.termline.bright{color:#d9d9d9}
 
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.025) 0px,
-      rgba(255,255,255,.025) 1px,
-      transparent 2px,
-      transparent 4px
-    );
-    mix-blend-mode:screen;
-    opacity:.22;
-    z-index:20;
-  }
+.footer{
+  margin-top:8px;
+  text-align:center;
+  color:#444;
+  font-size:9px;
+  letter-spacing:.08em;
+}
 
-  body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    box-shadow:inset 0 0 180px #000;
-    z-index:19;
-  }
+.glitch{animation:glitch .1s linear 4}
+@keyframes glitch{
+  0%{transform:translate(0)}
+  25%{transform:translate(-2px,1px)}
+  50%{transform:translate(2px,-1px)}
+  75%{transform:translate(-1px,-1px)}
+  100%{transform:translate(0)}
+}
+.flash{animation:flash .26s ease-out}
+@keyframes flash{
+  0%{box-shadow:inset 0 0 0 9999px rgba(170,0,0,.16)}
+  100%{box-shadow:inset 0 0 0 9999px rgba(170,0,0,0)}
+}
 
-  .noise{
-    position:fixed;
-    inset:-50%;
-    pointer-events:none;
-    opacity:.035;
-    z-index:18;
-    animation:grain .18s steps(2) infinite;
-    background-image:
-      radial-gradient(circle, #fff 0 1px, transparent 1px),
-      radial-gradient(circle, #fff 0 1px, transparent 1px);
-    background-size:3px 3px,4px 4px;
-    background-position:0 0,1px 2px;
-  }
-
-  @keyframes grain{
-    0%{transform:translate(0,0)}
-    25%{transform:translate(2%,-1%)}
-    50%{transform:translate(-1%,2%)}
-    75%{transform:translate(1%,1%)}
-    100%{transform:translate(0,0)}
-  }
-
-  .wrap{
-    width:min(920px,92vw);
-    margin:0 auto;
-    padding:42px 0 70px;
-  }
-
-  .topline{
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    color:var(--dim);
-    font-size:12px;
-    letter-spacing:.08em;
-    margin-bottom:18px;
-  }
-
-  .panel{
-    border:1px solid #2d2d2d;
-    background:linear-gradient(180deg, rgba(18,18,18,.95), rgba(7,7,7,.97));
-    box-shadow:0 0 40px rgba(0,0,0,.8);
-    padding:30px;
-    position:relative;
-  }
-
-  .panel::before{
-    content:"CLASSIFIED";
-    position:absolute;
-    top:-14px;
-    right:24px;
-    color:var(--red);
-    border:2px solid var(--red);
-    padding:4px 9px;
-    font-weight:bold;
-    transform:rotate(2deg);
-    background:#050505;
-    letter-spacing:.14em;
-  }
-
-  h1{
-    margin:0 0 8px;
-    color:#f2f2f2;
-    font-size:clamp(28px,6vw,58px);
-    line-height:.95;
-    letter-spacing:-.04em;
-    text-transform:uppercase;
-    text-shadow:0 0 18px rgba(200,22,22,.15);
-  }
-
-  .sub{
-    color:var(--red);
-    font-size:14px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    margin-bottom:28px;
-  }
-
-  .meta{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px 20px;
-    border-top:1px solid #262626;
-    border-bottom:1px solid #262626;
-    padding:16px 0;
-    margin-bottom:25px;
-    color:#a8a8a8;
-    font-size:13px;
-  }
-
-  .meta b{color:#d9d9d9;font-weight:normal}
-
-  .warning{
-    color:#bdbdbd;
-    line-height:1.55;
-    max-width:720px;
-    margin-bottom:26px;
-  }
-
-  .warning strong{color:var(--red)}
-
-  .controls{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    flex-wrap:wrap;
-    margin:18px 0 8px;
-  }
-
-  button{
-    appearance:none;
-    border:1px solid var(--red);
-    background:#100606;
-    color:#efefef;
-    padding:14px 18px;
-    font:700 14px "Courier New", monospace;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    cursor:pointer;
-    transition:.15s ease;
-    box-shadow:0 0 0 rgba(200,22,22,0);
-  }
-
-  button:hover{
-    background:#1d0808;
-    box-shadow:0 0 24px rgba(200,22,22,.12);
-  }
-
-  button:active{transform:translateY(1px)}
-
-  .status{
-    color:#838383;
-    font-size:13px;
-  }
-
-  .status.live{
-    color:#ff2b2b;
-    animation:pulse 1s infinite;
-  }
-
-  @keyframes pulse{
-    50%{opacity:.35}
-  }
-
-  .terminal{
-    margin-top:28px;
-    min-height:220px;
-    border:1px solid #242424;
-    background:#020202;
-    padding:18px;
-    font-size:13px;
-    line-height:1.65;
-    color:#8f8f8f;
-    white-space:pre-line;
-    position:relative;
-  }
-
-  .terminal::before{
-    content:"RECOVERY CONSOLE // READ ONLY";
-    position:absolute;
-    top:-10px;
-    left:12px;
-    background:#050505;
-    padding:0 7px;
-    color:#555;
-    font-size:11px;
-  }
-
-  .terminal .danger{color:#cf2020}
-  .terminal .bright{color:#d4d4d4}
-
-  .footer{
-    margin-top:18px;
-    color:#474747;
-    font-size:11px;
-    letter-spacing:.08em;
-    text-align:center;
-  }
-
-  .glitch{
-    animation:glitch .11s linear 3;
-  }
-
-  @keyframes glitch{
-    0%{transform:translate(0)}
-    20%{transform:translate(-2px,1px)}
-    40%{transform:translate(2px,-1px)}
-    60%{transform:translate(-1px,-1px)}
-    80%{transform:translate(1px,1px)}
-    100%{transform:translate(0)}
-  }
-
-  .redflash{
-    animation:redflash .28s ease-out 1;
-  }
-
-  @keyframes redflash{
-    0%{box-shadow:inset 0 0 0 9999px rgba(170,0,0,.18)}
-    100%{box-shadow:inset 0 0 0 9999px rgba(170,0,0,0)}
-  }
-
-  .hidden{display:none}
-
-  @media (max-width:600px){
-    .wrap{padding-top:24px}
-    .panel{padding:22px 18px}
-    .meta{grid-template-columns:1fr}
-    .topline{font-size:10px}
-  }
+@media (max-height:700px){
+  .wrap{padding:4px 0}
+  .panel{padding:12px 14px 10px;max-height:calc(100dvh - 8px)}
+  h1{font-size:34px}
+  .meta{margin-top:8px;padding:7px 0}
+  .controls{margin:8px 0 6px}
+  .terminal{height:90px}
+  .alert{min-height:48px}
+}
 </style>
 </head>
 <body>
-<div class="noise"></div>
-
 <div class="wrap">
-  <div class="topline">
-    <span>OFFICE OF SPECIAL AERIAL PHENOMENA</span>
-    <span>ACCESS LEVEL 5</span>
-  </div>
-
   <div class="panel" id="panel">
+    <div class="kicker">OFFICE OF SPECIAL AERIAL PHENOMENA // SITE 19</div>
     <h1 id="title">Transmission 51-B</h1>
     <div class="sub" id="subtitle">West Hallway Incident</div>
 
     <div class="meta">
       <div>CASE: <b>51-B</b></div>
       <div>LOCATION: <b>WEST HALLWAY</b></div>
-      <div>TIMESTAMP: <b id="timestamp">02:13:00</b></div>
+      <div>TIME: <b id="timestamp">02:13:00</b></div>
       <div>STATUS: <b id="archiveStatus">ARCHIVED</b></div>
-    </div>
-
-    <div class="warning">
-      This recording was recovered from a failed internal communications channel.
-      <strong>Playback is not authorized for civilian devices.</strong>
-      If the transmission changes after playback begins, disconnect immediately.
     </div>
 
     <div class="controls">
@@ -295,146 +227,162 @@
       <span class="status" id="status">SIGNAL DORMANT</span>
     </div>
 
+    <div class="alert" id="alert">RECOVERED AUDIO // PLAYBACK AUTHORIZED</div>
+
     <audio id="audio" preload="auto">
       <source src="TRANSMISSION_51B_LIVE_WEST_HALLWAY.wav" type="audio/wav">
     </audio>
 
-    <div class="terminal" id="terminal">[02:13:00] Archive handshake complete.
-[02:13:00] Source: Site 19 internal channel.
-[02:13:00] Playback mirror established.
-[02:13:00] Awaiting user input...</div>
+    <div class="terminal" id="terminal">
+      <div class="termline bright">[02:13:00] Archive handshake complete.</div>
+      <div class="termline">[02:13:00] Source: Site 19 internal channel.</div>
+      <div class="termline">[02:13:00] Playback mirror established.</div>
+    </div>
 
-    <div class="footer">PROPERTY OF SITE 19 // DO NOT DISTRIBUTE // CASE 51-B</div>
+    <div class="footer">CASE 51-B // DO NOT DISTRIBUTE</div>
   </div>
 </div>
 
 <script>
-const audio = document.getElementById('audio');
-const playBtn = document.getElementById('playBtn');
-const status = document.getElementById('status');
-const terminal = document.getElementById('terminal');
-const archiveStatus = document.getElementById('archiveStatus');
-const timestamp = document.getElementById('timestamp');
-const panel = document.getElementById('panel');
-const title = document.getElementById('title');
-const subtitle = document.getElementById('subtitle');
+const audio=document.getElementById('audio');
+const playBtn=document.getElementById('playBtn');
+const status=document.getElementById('status');
+const alertBox=document.getElementById('alert');
+const terminal=document.getElementById('terminal');
+const archiveStatus=document.getElementById('archiveStatus');
+const timestamp=document.getElementById('timestamp');
+const panel=document.getElementById('panel');
+const title=document.getElementById('title');
+const subtitle=document.getElementById('subtitle');
 
-let started = false;
-let eventsFired = {};
+let started=false;
+let fired={};
 
-function log(text, cls=''){
-  const line = document.createElement('div');
-  line.textContent = text;
-  if(cls) line.className = cls;
+function addLine(text, cls=''){
+  const line=document.createElement('div');
+  line.className='termline '+cls;
+  line.textContent=text;
   terminal.appendChild(line);
-  terminal.scrollTop = terminal.scrollHeight;
+  while(terminal.children.length>5){
+    terminal.removeChild(terminal.firstChild);
+  }
 }
-
 function glitch(){
   panel.classList.remove('glitch');
   void panel.offsetWidth;
   panel.classList.add('glitch');
 }
-
 function flash(){
-  document.body.classList.remove('redflash');
+  document.body.classList.remove('flash');
   void document.body.offsetWidth;
-  document.body.classList.add('redflash');
+  document.body.classList.add('flash');
+}
+function setAlert(text, mode=''){
+  alertBox.textContent=text;
+  alertBox.className='alert'+(mode?' '+mode:'');
 }
 
-playBtn.addEventListener('click', async () => {
+playBtn.addEventListener('click', async()=>{
   if(!started){
-    started = true;
-    terminal.textContent = '';
-    log('[02:13:00] Playback initiated.', 'bright');
-    log('[02:13:01] Archive source verified.');
-    log('[02:13:01] Signal integrity: 81%.');
-    status.textContent = 'PLAYBACK ACTIVE';
+    started=true;
+    terminal.innerHTML='';
+    addLine('[02:13:00] Playback initiated.','bright');
+    addLine('[02:13:01] Archive source verified.');
+    setAlert('PLAYBACK ACTIVE');
+    status.textContent='PLAYBACK ACTIVE';
     status.classList.add('live');
-    playBtn.textContent = 'PAUSE TRANSMISSION';
-    try { await audio.play(); } catch(e) {
-      log('[ERROR] Audio blocked by browser.', 'danger');
+    playBtn.textContent='PAUSE';
+    try{await audio.play()}catch(e){
+      setAlert('AUDIO BLOCKED BY BROWSER','hot');
     }
   } else if(audio.paused){
     audio.play();
-    playBtn.textContent='PAUSE TRANSMISSION';
+    playBtn.textContent='PAUSE';
   } else {
     audio.pause();
-    playBtn.textContent='RESUME TRANSMISSION';
+    playBtn.textContent='RESUME';
   }
 });
 
-audio.addEventListener('timeupdate', () => {
-  const t = audio.currentTime;
+audio.addEventListener('timeupdate',()=>{
+  const t=audio.currentTime;
 
-  if(t > 10 && !eventsFired.a){
-    eventsFired.a = true;
-    log('[02:13:12] WARNING: Unscheduled carrier detected.', 'danger');
+  if(t>10&&!fired.a){
+    fired.a=true;
+    addLine('[02:13:12] Unscheduled carrier detected.','danger');
+    setAlert('SECOND SIGNAL DETECTED','hot');
     glitch();
   }
 
-  if(t > 18 && !eventsFired.b){
-    eventsFired.b = true;
-    log('[02:13:18] Secondary source handshake accepted.');
-    log('[02:13:18] Origin: UNKNOWN');
-    archiveStatus.textContent = 'SIGNAL ACTIVE';
-    archiveStatus.style.color = '#ff2b2b';
+  if(t>18&&!fired.b){
+    fired.b=true;
+    addLine('[02:13:18] Secondary source handshake accepted.');
+    addLine('[02:13:18] Origin: UNKNOWN','danger');
+    archiveStatus.textContent='ACTIVE';
+    archiveStatus.style.color='#ff2b2b';
+    setAlert('SOURCE: UNKNOWN','hot');
     glitch();
   }
 
-  if(t > 28 && !eventsFired.c){
-    eventsFired.c = true;
-    log('[02:13:29] Archive timestamp mismatch.', 'danger');
-    log('[02:13:30] Timestamp is advancing.');
-    timestamp.textContent = 'LIVE';
+  if(t>28&&!fired.c){
+    fired.c=true;
+    addLine('[02:13:29] Archive timestamp mismatch.','danger');
+    addLine('[02:13:30] Timestamp is advancing.','danger');
+    timestamp.textContent='LIVE';
+    archiveStatus.textContent='LIVE';
+    title.textContent='SIGNAL 51-B';
+    subtitle.textContent='LIVE RETURN CHANNEL';
+    setAlert('THIS RECORDING IS NOW LIVE','critical');
     flash();
   }
 
-  if(t > 38 && !eventsFired.d){
-    eventsFired.d = true;
-    log('[LIVE] Receiver-side acoustic activity detected.', 'danger');
-    log('[LIVE] Source proximity: UNRESOLVED');
-    subtitle.textContent = 'West Hallway // Live Signal';
+  if(t>38&&!fired.d){
+    fired.d=true;
+    addLine('[LIVE] Receiver-side activity detected.','danger');
+    addLine('[LIVE] Origin: LISTENER SIDE','danger');
+    setAlert('SOURCE: YOUR SIDE OF THE TRANSMISSION','critical');
     glitch();
   }
 
-  if(t > 49 && !eventsFired.e){
-    eventsFired.e = true;
-    log('[LIVE] Do not terminate playback.', 'danger');
-    log('[LIVE] Something is using the return channel.');
-    status.textContent = 'RETURN SIGNAL DETECTED';
+  if(t>49&&!fired.e){
+    fired.e=true;
+    addLine('[LIVE] Return channel open.','danger');
+    addLine('[LIVE] Proximity unresolved.','danger');
+    status.textContent='RETURN SIGNAL DETECTED';
+    setAlert('DO NOT TURN AROUND','critical');
     flash();
   }
 
-  if(t > 60 && !eventsFired.f){
-    eventsFired.f = true;
-    log('[LIVE] Proximity warning.', 'danger');
-    log('[LIVE] DO NOT TURN AROUND.', 'danger');
-    title.textContent = 'SIGNAL 51-B // LIVE';
+  if(t>60&&!fired.f){
+    fired.f=true;
+    addLine('[LIVE] Movement detected behind listener.','danger');
+    setAlert('THERE IS SOMETHING BEHIND YOU','critical');
     glitch();
   }
 
-  if(t > 72 && !eventsFired.g){
-    eventsFired.g = true;
-    log('[LIVE] It is behind you.', 'danger');
-    log('[LIVE] Keep facing forward.', 'danger');
+  if(t>72&&!fired.g){
+    fired.g=true;
+    addLine('[LIVE] Distance estimate decreasing.','danger');
+    setAlert('KEEP LOOKING FORWARD','critical');
     flash();
   }
 
-  if(t > 82 && !eventsFired.h){
-    eventsFired.h = true;
-    log('[LIVE] Distance estimate: < 1 meter', 'danger');
-    log('[LIVE] DO NOT LOOK BEHIND YOU.', 'danger');
+  if(t>82&&!fired.h){
+    fired.h=true;
+    addLine('[LIVE] Distance estimate: < 1 meter','danger');
+    addLine('[LIVE] DO NOT LOOK BEHIND YOU.','danger');
+    setAlert('IT IS DIRECTLY BEHIND YOU','critical');
     glitch();
   }
 });
 
-audio.addEventListener('ended', () => {
-  status.textContent = 'SIGNAL LOST';
-  playBtn.textContent = 'REPLAY TRANSMISSION';
-  log('[LIVE] Carrier lost.', 'danger');
-  log('[LIVE] Receiver connection remains open.', 'danger');
-  playBtn.onclick = () => location.reload();
+audio.addEventListener('ended',()=>{
+  status.textContent='SIGNAL LOST';
+  playBtn.textContent='REPLAY';
+  setAlert('RECEIVER CONNECTION REMAINS OPEN','hot');
+  addLine('[LIVE] Carrier lost.','danger');
+  addLine('[LIVE] Receiver connection remains open.','danger');
+  playBtn.onclick=()=>location.reload();
 });
 </script>
 </body>

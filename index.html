@@ -120,6 +120,11 @@ h1{
   font-size:12px;
 }
 .meta b{color:#ddd;font-weight:normal}
+.meta b.liveState{
+  color:#63ff72 !important;
+  font-weight:bold;
+  text-shadow:0 0 9px rgba(99,255,114,.42);
+}
 
 .warning{
   color:#b9b9b9;
@@ -154,8 +159,9 @@ button{
   font-size:12px;
 }
 .status.live{
-  color:var(--redBright);
+  color:#63ff72;
   font-weight:bold;
+  text-shadow:0 0 10px rgba(99,255,114,.45);
   animation:pulse 1s infinite;
 }
 @keyframes pulse{50%{opacity:.35}}
@@ -369,6 +375,7 @@ function setAlert(text,mode=''){
 playBtn.addEventListener('click',async()=>{
   if(!started){
     started=true;
+    consoleEventIndex=0;
     terminal.innerHTML='';
     addLine('[02:13:00] Playback initiated.','bright');
     addLine('[02:13:01] Archive source verified.');
@@ -389,8 +396,44 @@ playBtn.addEventListener('click',async()=>{
   }
 });
 
+
+// Smaller console events happen independently of the large warning box.
+// This makes the recovered console feel like a live system rather than a subtitle track.
+const consoleEvents = [
+  [4.0,  '[02:13:04] Carrier noise above archived baseline.'],
+  [7.0,  '[02:13:07] Automatic gain correction engaged.'],
+  [13.0, '[02:13:13] Packet loss detected: 6%.'],
+  [15.5, '[02:13:15] Unknown pulse repeating at 1.8 sec intervals.'],
+  [21.0, '[02:13:21] Return-channel handshake requested.'],
+  [24.0, '[02:13:24] Request denied by archive controller.'],
+  [26.0, '[02:13:26] Handshake repeated without authorization.'],
+  [31.0, '[LIVE] Clock source no longer matches archive.'],
+  [34.0, '[LIVE] Local receiver microphone response detected.'],
+  [36.5, '[LIVE] Acoustic return exceeds playback source.'],
+  [41.0, '[LIVE] Unidentified low-frequency movement detected.'],
+  [44.0, '[LIVE] Movement source cannot be isolated.'],
+  [46.5, '[LIVE] West hallway channel reopened.'],
+  [52.0, '[LIVE] Receiver-side noise floor increasing.'],
+  [55.0, '[LIVE] Spatial estimate recalculating...'],
+  [57.5, '[LIVE] Source position: BEHIND RECEIVER.'],
+  [63.0, '[LIVE] Do not acknowledge secondary source.'],
+  [66.0, '[LIVE] Breathing pattern does not match listener.'],
+  [69.0, '[LIVE] Proximity threshold exceeded.'],
+  [75.0, '[LIVE] Motion continues while listener is stationary.'],
+  [78.0, '[LIVE] Range estimate unstable: 1.7 m... 1.3 m...'],
+  [80.5, '[LIVE] Range estimate decreasing.'],
+];
+let consoleEventIndex = 0;
+
 audio.addEventListener('timeupdate',()=>{
   const t=audio.currentTime;
+
+  while(consoleEventIndex < consoleEvents.length && t >= consoleEvents[consoleEventIndex][0]){
+    const msg = consoleEvents[consoleEventIndex][1];
+    const danger = msg.includes('[LIVE]') || msg.includes('Unknown') || msg.includes('denied') || msg.includes('BEHIND');
+    addLine(msg, danger ? 'danger' : '');
+    consoleEventIndex++;
+  }
 
   if(t>10&&!fired.a){
     fired.a=true;
@@ -404,7 +447,7 @@ audio.addEventListener('timeupdate',()=>{
     addLine('[02:13:18] Secondary source handshake accepted.');
     addLine('[02:13:18] Origin: UNKNOWN','danger');
     archiveStatus.textContent='ACTIVE';
-    archiveStatus.style.color='#ff2b2b';
+    archiveStatus.classList.add('liveState');
     setAlert('SOURCE: UNKNOWN','hot');
     glitch();
   }
@@ -414,7 +457,9 @@ audio.addEventListener('timeupdate',()=>{
     addLine('[02:13:29] Archive timestamp mismatch.','danger');
     addLine('[02:13:30] Timestamp is advancing.','danger');
     timestamp.textContent='LIVE';
+    timestamp.classList.add('liveState');
     archiveStatus.textContent='LIVE';
+    archiveStatus.classList.add('liveState');
     title.textContent='SIGNAL 51-B';
     subtitle.textContent='LIVE RETURN CHANNEL';
     setAlert('THIS RECORDING IS NOW LIVE','critical');

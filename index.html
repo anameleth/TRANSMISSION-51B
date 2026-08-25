@@ -201,7 +201,7 @@ button{
 
 .terminal{
   margin-top:12px;
-  height:145px;
+  height:205px;
   overflow:hidden;
   border:1px solid #242424;
   background:#020202;
@@ -263,7 +263,7 @@ button{
   .alert{min-height:64px;font-size:13px}
   .alert.hot{font-size:clamp(19px,5.8vw,28px)}
   .alert.critical{font-size:clamp(23px,7vw,34px)}
-  .terminal{height:122px;font-size:10px;padding:11px}
+  .terminal{height:175px;font-size:10px;padding:11px}
   .footer{font-size:9px;margin-top:7px}
 }
 
@@ -276,7 +276,7 @@ button{
   .warning{margin-bottom:8px}
   .controls{margin:6px 0}
   .alert{min-height:54px}
-  .terminal{height:96px;margin-top:8px}
+  .terminal{height:145px;margin-top:8px}
 }
 </style>
 </head>
@@ -345,9 +345,9 @@ function addLine(text,cls=''){
   const line=document.createElement('div');
   line.className='termline '+cls;
   line.textContent=text;
-  terminal.appendChild(line);
-  while(terminal.children.length>7){
-    terminal.removeChild(terminal.firstChild);
+  terminal.insertBefore(line, terminal.firstChild);
+  while(terminal.children.length>9){
+    terminal.removeChild(terminal.lastChild);
   }
 }
 

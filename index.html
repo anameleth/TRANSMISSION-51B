@@ -125,6 +125,11 @@ h1{
   font-weight:bold;
   text-shadow:0 0 9px rgba(99,255,114,.42);
 }
+.meta b.liveTime{
+  color:#ffd35a !important;
+  font-weight:bold;
+  text-shadow:0 0 9px rgba(255,211,90,.42);
+}
 
 .warning{
   color:#b9b9b9;
@@ -162,6 +167,12 @@ button{
   color:#63ff72;
   font-weight:bold;
   text-shadow:0 0 10px rgba(99,255,114,.45);
+  animation:pulse 1s infinite;
+}
+.status.playback{
+  color:#ff3030;
+  font-weight:bold;
+  text-shadow:0 0 10px rgba(255,48,48,.45);
   animation:pulse 1s infinite;
 }
 @keyframes pulse{50%{opacity:.35}}
@@ -512,7 +523,8 @@ playBtn.addEventListener('click',async()=>{
     addLine('[02:13:01] Signal integrity: 81%.');
     setAlert('PLAYBACK ACTIVE');
     status.textContent='PLAYBACK ACTIVE';
-    status.classList.add('live');
+    status.classList.remove('live');
+    status.classList.add('playback');
     playBtn.textContent='PAUSE TRANSMISSION';
     try{await audio.play()}catch(e){
       setAlert('AUDIO BLOCKED BY BROWSER','hot');
@@ -564,15 +576,17 @@ audio.addEventListener('timeupdate',()=>{
   const drift = 81 - t*0.42 + Math.sin(t*1.7)*7 + Math.sin(t*.41)*5;
   setSignal(drift);
 
-  // Once live, the timestamp becomes an actual running clock.
+  // Once the archive turns LIVE, use the listener's real local device time.
   if(t>=28){
-    const baseSeconds = 2*3600 + 13*60;
-    const liveSeconds = baseSeconds + Math.floor(t-28);
-    const hh = String(Math.floor(liveSeconds/3600)%24).padStart(2,'0');
-    const mm = String(Math.floor(liveSeconds/60)%60).padStart(2,'0');
-    const ss = String(liveSeconds%60).padStart(2,'0');
-    timestamp.textContent = hh+':'+mm+':'+ss+' LIVE';
-    timestamp.classList.add('liveState');
+    const now = new Date();
+    const timeText = now.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    timestamp.textContent = timeText + ' • LIVE';
+    timestamp.classList.remove('liveState');
+    timestamp.classList.add('liveTime');
   }
 
   while(consoleEventIndex < consoleEvents.length && t >= consoleEvents[consoleEventIndex][0]){
@@ -629,8 +643,14 @@ audio.addEventListener('timeupdate',()=>{
     fired.c=true;
     addLine('[02:13:29] Archive timestamp mismatch.','danger');
     addLine('[02:13:30] Timestamp is advancing.','danger');
-    timestamp.textContent='LIVE';
-    timestamp.classList.add('liveState');
+    const now = new Date();
+    timestamp.textContent = now.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    }) + ' • LIVE';
+    timestamp.classList.remove('liveState');
+    timestamp.classList.add('liveTime');
     archiveStatus.textContent='LIVE';
     archiveStatus.classList.add('liveState');
     title.textContent='SIGNAL 51-B';
@@ -652,6 +672,8 @@ audio.addEventListener('timeupdate',()=>{
     addLine('[LIVE] Return channel remains open.','danger');
     addLine('[LIVE] Proximity unresolved.','danger');
     status.textContent='RETURN SIGNAL DETECTED';
+    status.classList.remove('playback');
+    status.classList.add('live');
     setAlert('DO NOT TURN AROUND','critical');
     flash();
   }

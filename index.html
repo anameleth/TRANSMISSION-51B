@@ -47,7 +47,7 @@ body::before{
   position:relative;
   border:1px solid #2c2c2c;
   background:linear-gradient(180deg,rgba(18,18,18,.98),rgba(5,5,5,.99));
-  padding:16px 18px 14px;
+  padding:20px 21px 17px;
   box-shadow:0 0 40px rgba(0,0,0,.85);
 }
 .panel::after{
@@ -65,14 +65,14 @@ body::before{
 }
 .kicker{
   color:var(--dim);
-  font-size:10px;
+  font-size:12px;
   letter-spacing:.08em;
   margin-bottom:6px;
 }
 h1{
   margin:0;
   padding-right:105px;
-  font-size:clamp(26px,7vw,48px);
+  font-size:clamp(32px,8.5vw,54px);
   line-height:.9;
   letter-spacing:-.04em;
   text-transform:uppercase;
@@ -80,7 +80,7 @@ h1{
 .sub{
   margin-top:5px;
   color:var(--red);
-  font-size:12px;
+  font-size:14px;
   letter-spacing:.14em;
   text-transform:uppercase;
 }
@@ -92,7 +92,7 @@ h1{
   padding:9px 0;
   border-top:1px solid #282828;
   border-bottom:1px solid #282828;
-  font-size:11px;
+  font-size:13px;
   color:#999;
 }
 .meta b{color:#ddd;font-weight:normal}
@@ -107,13 +107,13 @@ button{
   border:1px solid var(--red);
   background:#160606;
   color:#fff;
-  padding:11px 13px;
-  font:700 12px "Courier New",monospace;
+  padding:13px 16px;
+  font:700 14px "Courier New",monospace;
   letter-spacing:.09em;
   cursor:pointer;
 }
 .status{
-  font-size:12px;
+  font-size:13px;
   color:#858585;
 }
 .status.live{
@@ -125,7 +125,7 @@ button{
 
 .alert{
   margin-top:8px;
-  min-height:58px;
+  min-height:72px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -134,7 +134,7 @@ button{
   background:#020202;
   color:#7f7f7f;
   padding:10px 12px;
-  font-size:13px;
+  font-size:15px;
   line-height:1.25;
   text-transform:uppercase;
   letter-spacing:.06em;
@@ -143,7 +143,7 @@ button{
   color:#fff;
   border-color:#7f0f0f;
   background:#130303;
-  font-size:clamp(18px,5vw,30px);
+  font-size:clamp(21px,5.7vw,34px);
   font-weight:bold;
   text-shadow:0 0 14px rgba(255,38,38,.35);
 }
@@ -151,7 +151,7 @@ button{
   color:#fff;
   border-color:#ff2626;
   background:#240000;
-  font-size:clamp(22px,6vw,38px);
+  font-size:clamp(26px,7vw,42px);
   font-weight:bold;
   animation:throb .45s infinite alternate;
 }
@@ -162,14 +162,14 @@ button{
 
 .terminal{
   margin-top:8px;
-  height:118px;
+  height:138px;
   overflow:hidden;
   border:1px solid #222;
   background:#010101;
   padding:9px 10px;
   color:#868686;
-  font-size:10px;
-  line-height:1.35;
+  font-size:12px;
+  line-height:1.38;
 }
 .termline{margin:0 0 2px}
 .termline.danger{color:#ff3030}
@@ -179,7 +179,7 @@ button{
   margin-top:8px;
   text-align:center;
   color:#444;
-  font-size:9px;
+  font-size:10px;
   letter-spacing:.08em;
 }
 
@@ -200,11 +200,11 @@ button{
 @media (max-height:700px){
   .wrap{padding:4px 0}
   .panel{padding:12px 14px 10px;max-height:calc(100dvh - 8px)}
-  h1{font-size:34px}
+  h1{font-size:39px}
   .meta{margin-top:8px;padding:7px 0}
   .controls{margin:8px 0 6px}
-  .terminal{height:90px}
-  .alert{min-height:48px}
+  .terminal{height:105px}
+  .alert{min-height:58px}
 }
 </style>
 </head>

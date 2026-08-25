@@ -7,125 +7,162 @@
 <style>
 :root{
   --bg:#050505;
-  --panel:#0b0b0b;
-  --red:#ff2626;
-  --red2:#8b0e0e;
-  --text:#e7e7e7;
-  --dim:#8a8a8a;
+  --panel:#0a0a0a;
+  --red:#d11c1c;
+  --redBright:#ff2b2b;
+  --text:#dedede;
+  --dim:#858585;
 }
+
 *{box-sizing:border-box}
+
 html,body{
   margin:0;
-  width:100%;
-  height:100%;
-  background:radial-gradient(circle at center, rgba(120,0,0,.07), transparent 38%),#050505;
+  min-height:100%;
+  background:
+    radial-gradient(circle at center, rgba(120,0,0,.07), transparent 40%),
+    #050505;
   color:var(--text);
   font-family:"Courier New",monospace;
-  overflow:hidden;
 }
+
 body::before{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.022) 0 1px,transparent 2px 4px);
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,.022) 0px,
+    rgba(255,255,255,.022) 1px,
+    transparent 2px,
+    transparent 4px
+  );
   opacity:.28;
-  z-index:10;
+  z-index:20;
 }
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  box-shadow:inset 0 0 150px #000;
+  z-index:19;
+}
+
 .wrap{
-  width:min(900px,94vw);
-  height:100dvh;
-  margin:auto;
-  padding:10px 0;
+  width:min(920px,94vw);
+  margin:0 auto;
+  padding:18px 0;
+}
+
+.topline{
   display:flex;
-  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  color:var(--dim);
+  font-size:11px;
+  letter-spacing:.08em;
+  margin-bottom:10px;
 }
+
 .panel{
-  width:100%;
-  max-height:calc(100dvh - 20px);
-  overflow:hidden;
-  position:relative;
-  border:1px solid #2c2c2c;
-  background:linear-gradient(180deg,rgba(18,18,18,.98),rgba(5,5,5,.99));
-  padding:20px 21px 17px;
+  border:1px solid #2b2b2b;
+  background:linear-gradient(180deg,rgba(18,18,18,.96),rgba(6,6,6,.98));
   box-shadow:0 0 40px rgba(0,0,0,.85);
+  padding:22px 24px 18px;
+  position:relative;
 }
-.panel::after{
+
+.panel::before{
   content:"CLASSIFIED";
   position:absolute;
-  top:10px;
-  right:12px;
-  border:2px solid var(--red2);
-  color:var(--red);
-  padding:3px 7px;
-  font-size:11px;
+  top:-12px;
+  right:22px;
+  color:var(--redBright);
+  border:2px solid var(--red);
+  padding:4px 8px;
   font-weight:bold;
   transform:rotate(2deg);
-  letter-spacing:.12em;
-}
-.kicker{
-  color:var(--dim);
+  background:#050505;
+  letter-spacing:.14em;
   font-size:12px;
-  letter-spacing:.08em;
-  margin-bottom:6px;
 }
+
 h1{
-  margin:0;
-  padding-right:105px;
-  font-size:clamp(32px,8.5vw,54px);
-  line-height:.9;
+  margin:0 0 5px;
+  color:#f2f2f2;
+  font-size:clamp(31px,7vw,52px);
+  line-height:.95;
   letter-spacing:-.04em;
   text-transform:uppercase;
+  text-shadow:0 0 16px rgba(210,20,20,.12);
 }
+
 .sub{
-  margin-top:5px;
-  color:var(--red);
-  font-size:14px;
-  letter-spacing:.14em;
+  color:var(--redBright);
+  font-size:13px;
+  letter-spacing:.16em;
   text-transform:uppercase;
+  margin-bottom:18px;
 }
+
 .meta{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:5px 12px;
-  margin-top:12px;
-  padding:9px 0;
-  border-top:1px solid #282828;
-  border-bottom:1px solid #282828;
-  font-size:13px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px 18px;
+  border-top:1px solid #262626;
+  border-bottom:1px solid #262626;
+  padding:11px 0;
+  margin-bottom:15px;
   color:#999;
+  font-size:12px;
 }
 .meta b{color:#ddd;font-weight:normal}
+
+.warning{
+  color:#b9b9b9;
+  line-height:1.4;
+  margin-bottom:15px;
+  font-size:12px;
+}
+.warning strong{color:var(--redBright)}
+
 .controls{
   display:flex;
   align-items:center;
-  gap:10px;
-  margin:12px 0 8px;
+  gap:12px;
   flex-wrap:wrap;
+  margin:10px 0 8px;
 }
+
 button{
+  appearance:none;
   border:1px solid var(--red);
-  background:#160606;
-  color:#fff;
-  padding:13px 16px;
-  font:700 14px "Courier New",monospace;
-  letter-spacing:.09em;
+  background:#120505;
+  color:#f1f1f1;
+  padding:12px 15px;
+  font:700 13px "Courier New",monospace;
+  letter-spacing:.11em;
+  text-transform:uppercase;
   cursor:pointer;
 }
+
 .status{
-  font-size:13px;
   color:#858585;
+  font-size:12px;
 }
 .status.live{
-  color:#ff3434;
+  color:var(--redBright);
   font-weight:bold;
-  animation:pulse .9s infinite;
+  animation:pulse 1s infinite;
 }
-@keyframes pulse{50%{opacity:.3}}
+@keyframes pulse{50%{opacity:.35}}
 
 .alert{
   margin-top:8px;
-  min-height:72px;
+  min-height:70px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -133,54 +170,69 @@ button{
   border:1px solid #242424;
   background:#020202;
   color:#7f7f7f;
-  padding:10px 12px;
-  font-size:15px;
+  padding:12px;
+  font-size:14px;
   line-height:1.25;
   text-transform:uppercase;
   letter-spacing:.06em;
 }
+
 .alert.hot{
   color:#fff;
-  border-color:#7f0f0f;
+  border-color:#7e1010;
   background:#130303;
-  font-size:clamp(21px,5.7vw,34px);
+  font-size:clamp(20px,5.5vw,31px);
   font-weight:bold;
   text-shadow:0 0 14px rgba(255,38,38,.35);
 }
+
 .alert.critical{
   color:#fff;
   border-color:#ff2626;
   background:#240000;
-  font-size:clamp(26px,7vw,42px);
+  font-size:clamp(24px,6.5vw,38px);
   font-weight:bold;
-  animation:throb .45s infinite alternate;
+  animation:throb .5s infinite alternate;
 }
 @keyframes throb{
   from{transform:scale(1);box-shadow:0 0 0 rgba(255,0,0,0)}
-  to{transform:scale(1.02);box-shadow:0 0 28px rgba(255,0,0,.18)}
+  to{transform:scale(1.012);box-shadow:0 0 24px rgba(255,0,0,.16)}
 }
 
 .terminal{
-  margin-top:8px;
-  height:138px;
+  margin-top:12px;
+  height:145px;
   overflow:hidden;
-  border:1px solid #222;
-  background:#010101;
-  padding:9px 10px;
-  color:#868686;
-  font-size:12px;
-  line-height:1.38;
+  border:1px solid #242424;
+  background:#020202;
+  padding:13px;
+  font-size:11px;
+  line-height:1.45;
+  color:#8e8e8e;
+  position:relative;
 }
-.termline{margin:0 0 2px}
+
+.terminal::before{
+  content:"RECOVERY CONSOLE // READ ONLY";
+  position:absolute;
+  top:-9px;
+  left:10px;
+  background:#050505;
+  padding:0 6px;
+  color:#555;
+  font-size:9px;
+}
+
+.termline{margin:0 0 3px}
 .termline.danger{color:#ff3030}
-.termline.bright{color:#d9d9d9}
+.termline.bright{color:#d8d8d8}
 
 .footer{
-  margin-top:8px;
-  text-align:center;
-  color:#444;
+  margin-top:10px;
+  color:#474747;
   font-size:10px;
   letter-spacing:.08em;
+  text-align:center;
 }
 
 .glitch{animation:glitch .1s linear 4}
@@ -191,35 +243,65 @@ button{
   75%{transform:translate(-1px,-1px)}
   100%{transform:translate(0)}
 }
+
 .flash{animation:flash .26s ease-out}
 @keyframes flash{
   0%{box-shadow:inset 0 0 0 9999px rgba(170,0,0,.16)}
   100%{box-shadow:inset 0 0 0 9999px rgba(170,0,0,0)}
 }
 
-@media (max-height:700px){
-  .wrap{padding:4px 0}
-  .panel{padding:12px 14px 10px;max-height:calc(100dvh - 8px)}
-  h1{font-size:39px}
-  .meta{margin-top:8px;padding:7px 0}
-  .controls{margin:8px 0 6px}
-  .terminal{height:105px}
-  .alert{min-height:58px}
+@media (max-width:600px){
+  .wrap{width:95vw;padding:10px 0}
+  .topline{font-size:9px;margin-bottom:7px}
+  .panel{padding:18px 17px 14px}
+  h1{font-size:clamp(31px,9vw,44px)}
+  .sub{font-size:12px;margin-bottom:14px}
+  .meta{font-size:11px;padding:9px 0;margin-bottom:12px}
+  .warning{font-size:11px;line-height:1.35;margin-bottom:12px}
+  .controls{margin:8px 0 7px}
+  button{padding:11px 13px;font-size:12px}
+  .alert{min-height:64px;font-size:13px}
+  .alert.hot{font-size:clamp(19px,5.8vw,28px)}
+  .alert.critical{font-size:clamp(23px,7vw,34px)}
+  .terminal{height:122px;font-size:10px;padding:11px}
+  .footer{font-size:9px;margin-top:7px}
+}
+
+@media (max-height:700px) and (max-width:600px){
+  .wrap{padding:5px 0}
+  .topline{display:none}
+  .panel{padding:14px 15px 11px}
+  .sub{margin-bottom:10px}
+  .meta{padding:7px 0;margin-bottom:9px}
+  .warning{margin-bottom:8px}
+  .controls{margin:6px 0}
+  .alert{min-height:54px}
+  .terminal{height:96px;margin-top:8px}
 }
 </style>
 </head>
 <body>
+
 <div class="wrap">
+  <div class="topline">
+    <span>OFFICE OF SPECIAL AERIAL PHENOMENA</span>
+    <span>ACCESS LEVEL 5</span>
+  </div>
+
   <div class="panel" id="panel">
-    <div class="kicker">OFFICE OF SPECIAL AERIAL PHENOMENA // SITE 19</div>
     <h1 id="title">Transmission 51-B</h1>
     <div class="sub" id="subtitle">West Hallway Incident</div>
 
     <div class="meta">
       <div>CASE: <b>51-B</b></div>
       <div>LOCATION: <b>WEST HALLWAY</b></div>
-      <div>TIME: <b id="timestamp">02:13:00</b></div>
+      <div>TIMESTAMP: <b id="timestamp">02:13:00</b></div>
       <div>STATUS: <b id="archiveStatus">ARCHIVED</b></div>
+    </div>
+
+    <div class="warning">
+      This recording was recovered from a failed internal communications channel.
+      <strong>If the transmission changes after playback begins, disconnect immediately.</strong>
     </div>
 
     <div class="controls">
@@ -237,9 +319,10 @@ button{
       <div class="termline bright">[02:13:00] Archive handshake complete.</div>
       <div class="termline">[02:13:00] Source: Site 19 internal channel.</div>
       <div class="termline">[02:13:00] Playback mirror established.</div>
+      <div class="termline">[02:13:00] Awaiting user input...</div>
     </div>
 
-    <div class="footer">CASE 51-B // DO NOT DISTRIBUTE</div>
+    <div class="footer">PROPERTY OF SITE 19 // DO NOT DISTRIBUTE // CASE 51-B</div>
   </div>
 </div>
 
@@ -258,15 +341,16 @@ const subtitle=document.getElementById('subtitle');
 let started=false;
 let fired={};
 
-function addLine(text, cls=''){
+function addLine(text,cls=''){
   const line=document.createElement('div');
   line.className='termline '+cls;
   line.textContent=text;
   terminal.appendChild(line);
-  while(terminal.children.length>5){
+  while(terminal.children.length>7){
     terminal.removeChild(terminal.firstChild);
   }
 }
+
 function glitch(){
   panel.classList.remove('glitch');
   void panel.offsetWidth;
@@ -277,30 +361,31 @@ function flash(){
   void document.body.offsetWidth;
   document.body.classList.add('flash');
 }
-function setAlert(text, mode=''){
+function setAlert(text,mode=''){
   alertBox.textContent=text;
   alertBox.className='alert'+(mode?' '+mode:'');
 }
 
-playBtn.addEventListener('click', async()=>{
+playBtn.addEventListener('click',async()=>{
   if(!started){
     started=true;
     terminal.innerHTML='';
     addLine('[02:13:00] Playback initiated.','bright');
     addLine('[02:13:01] Archive source verified.');
+    addLine('[02:13:01] Signal integrity: 81%.');
     setAlert('PLAYBACK ACTIVE');
     status.textContent='PLAYBACK ACTIVE';
     status.classList.add('live');
-    playBtn.textContent='PAUSE';
+    playBtn.textContent='PAUSE TRANSMISSION';
     try{await audio.play()}catch(e){
       setAlert('AUDIO BLOCKED BY BROWSER','hot');
     }
-  } else if(audio.paused){
+  }else if(audio.paused){
     audio.play();
-    playBtn.textContent='PAUSE';
-  } else {
+    playBtn.textContent='PAUSE TRANSMISSION';
+  }else{
     audio.pause();
-    playBtn.textContent='RESUME';
+    playBtn.textContent='RESUME TRANSMISSION';
   }
 });
 
@@ -309,7 +394,7 @@ audio.addEventListener('timeupdate',()=>{
 
   if(t>10&&!fired.a){
     fired.a=true;
-    addLine('[02:13:12] Unscheduled carrier detected.','danger');
+    addLine('[02:13:12] WARNING: Unscheduled carrier detected.','danger');
     setAlert('SECOND SIGNAL DETECTED','hot');
     glitch();
   }
@@ -338,7 +423,7 @@ audio.addEventListener('timeupdate',()=>{
 
   if(t>38&&!fired.d){
     fired.d=true;
-    addLine('[LIVE] Receiver-side activity detected.','danger');
+    addLine('[LIVE] Receiver-side acoustic activity detected.','danger');
     addLine('[LIVE] Origin: LISTENER SIDE','danger');
     setAlert('SOURCE: YOUR SIDE OF THE TRANSMISSION','critical');
     glitch();
@@ -346,7 +431,7 @@ audio.addEventListener('timeupdate',()=>{
 
   if(t>49&&!fired.e){
     fired.e=true;
-    addLine('[LIVE] Return channel open.','danger');
+    addLine('[LIVE] Return channel remains open.','danger');
     addLine('[LIVE] Proximity unresolved.','danger');
     status.textContent='RETURN SIGNAL DETECTED';
     setAlert('DO NOT TURN AROUND','critical');
@@ -378,7 +463,7 @@ audio.addEventListener('timeupdate',()=>{
 
 audio.addEventListener('ended',()=>{
   status.textContent='SIGNAL LOST';
-  playBtn.textContent='REPLAY';
+  playBtn.textContent='REPLAY TRANSMISSION';
   setAlert('RECEIVER CONNECTION REMAINS OPEN','hot');
   addLine('[LIVE] Carrier lost.','danger');
   addLine('[LIVE] Receiver connection remains open.','danger');

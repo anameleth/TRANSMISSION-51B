@@ -369,9 +369,74 @@ button{
   .signalWrap{min-width:190px}
 }
 
+
+.interference{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:18;
+  opacity:0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 14px,
+      rgba(255,255,255,.055) 15px,
+      transparent 16px 27px
+    );
+}
+.interference.burst{
+  animation:interferenceBurst .38s steps(2) 1;
+}
+@keyframes interferenceBurst{
+  0%{opacity:0;transform:translateY(0)}
+  15%{opacity:.34;transform:translateY(-5px)}
+  35%{opacity:.10;transform:translateY(8px)}
+  55%{opacity:.42;transform:translateY(-2px)}
+  75%{opacity:.12;transform:translateY(4px)}
+  100%{opacity:0;transform:translateY(0)}
+}
+body.chromatic .panel{
+  text-shadow:2px 0 rgba(255,0,0,.35),-2px 0 rgba(0,180,255,.25);
+}
+body.dimFlicker{
+  animation:dimFlicker .24s steps(2) 1;
+}
+@keyframes dimFlicker{
+  0%{filter:brightness(1)}
+  20%{filter:brightness(.42)}
+  35%{filter:brightness(1.18)}
+  55%{filter:brightness(.68)}
+  72%{filter:brightness(1.08)}
+  100%{filter:brightness(1)}
+}
+.tear{
+  position:fixed;
+  left:0;
+  right:0;
+  height:7px;
+  top:50%;
+  z-index:21;
+  pointer-events:none;
+  opacity:0;
+  background:rgba(220,220,220,.13);
+  box-shadow:0 0 8px rgba(255,255,255,.14);
+}
+.tear.go{
+  animation:tearMove .28s steps(3) 1;
+}
+@keyframes tearMove{
+  0%{opacity:0;top:18%;transform:translateX(0)}
+  20%{opacity:.75;top:26%;transform:translateX(-8px)}
+  45%{opacity:.3;top:54%;transform:translateX(10px)}
+  70%{opacity:.65;top:73%;transform:translateX(-4px)}
+  100%{opacity:0;top:88%;transform:translateX(0)}
+}
+
 </style>
 </head>
 <body>
+<div class="interference" id="interference"></div>
+<div class="tear" id="tear"></div>
 
 <div class="wrap">
   <div class="topline">
@@ -440,6 +505,8 @@ const subtitle=document.getElementById('subtitle');
 const meterFill=document.getElementById('meterFill');
 const signalPct=document.getElementById('signalPct');
 const linkState=document.getElementById('linkState');
+const interference=document.getElementById('interference');
+const tear=document.getElementById('tear');
 
 let started=false;
 let fired={};
@@ -500,6 +567,26 @@ function typeLine(text,cls='',speed=24){
       line.classList.remove('typing');
     }
   },speed);
+}
+
+function interferenceBurst(){
+  interference.classList.remove('burst');
+  void interference.offsetWidth;
+  interference.classList.add('burst');
+}
+function chromaticBurst(){
+  document.body.classList.add('chromatic');
+  setTimeout(()=>document.body.classList.remove('chromatic'),180);
+}
+function dimBurst(){
+  document.body.classList.remove('dimFlicker');
+  void document.body.offsetWidth;
+  document.body.classList.add('dimFlicker');
+}
+function tearBurst(){
+  tear.classList.remove('go');
+  void tear.offsetWidth;
+  tear.classList.add('go');
 }
 
 function corruptFlash(text){
@@ -575,6 +662,20 @@ audio.addEventListener('timeupdate',()=>{
   // Signal fluctuates continuously.
   const drift = 81 - t*0.42 + Math.sin(t*1.7)*7 + Math.sin(t*.41)*5;
   setSignal(drift);
+
+  // Background interference grows less stable as the transmission progresses.
+  if(t>8 && !fired.fx1){ fired.fx1=true; interferenceBurst(); }
+  if(t>16 && !fired.fx2){ fired.fx2=true; chromaticBurst(); }
+  if(t>23 && !fired.fx3){ fired.fx3=true; tearBurst(); }
+  if(t>32 && !fired.fx4){ fired.fx4=true; dimBurst(); interferenceBurst(); }
+  if(t>43 && !fired.fx5){ fired.fx5=true; chromaticBurst(); tearBurst(); }
+  if(t>51 && !fired.fx6){ fired.fx6=true; interferenceBurst(); dimBurst(); }
+  if(t>58 && !fired.fx7){ fired.fx7=true; tearBurst(); chromaticBurst(); }
+  if(t>65 && !fired.fx8){ fired.fx8=true; interferenceBurst(); }
+  if(t>70 && !fired.fx9){ fired.fx9=true; dimBurst(); tearBurst(); }
+  if(t>76 && !fired.fx10){ fired.fx10=true; chromaticBurst(); interferenceBurst(); }
+  if(t>80 && !fired.fx11){ fired.fx11=true; tearBurst(); dimBurst(); }
+
 
   // Once the archive turns LIVE, use the listener's real local device time.
   if(t>=28){
@@ -657,10 +758,15 @@ audio.addEventListener('timeupdate',()=>{
     subtitle.textContent='LIVE RETURN CHANNEL';
     setAlert('THIS RECORDING IS NOW LIVE','critical');
     flash();
+    interferenceBurst();
+    chromaticBurst();
   }
 
   if(t>38&&!fired.d){
     fired.d=true;
+    archiveStatus.textContent='ANOMALY DETECTED';
+    archiveStatus.classList.remove('liveState');
+    archiveStatus.style.color='#ff9f43';
     addLine('[LIVE] Receiver-side acoustic activity detected.','danger');
     addLine('[LIVE] Origin: LISTENER SIDE','danger');
     setAlert('SOURCE: YOUR SIDE OF THE TRANSMISSION','critical');
@@ -681,13 +787,15 @@ audio.addEventListener('timeupdate',()=>{
   if(t>60&&!fired.f){
     fired.f=true;
     addLine('[LIVE] Movement detected behind listener.','danger');
-    archiveStatus.textContent='ACTIVE INCIDENT';
+    archiveStatus.textContent='PROXIMITY ALERT';
     archiveStatus.classList.remove('liveState');
     archiveStatus.style.color='#ff3030';
     linkState.innerHTML='<span class="dot"></span> RECEIVER COMPROMISED';
     linkState.classList.add('bad');
     setAlert('THERE IS SOMETHING BEHIND YOU','critical');
     glitch();
+    tearBurst();
+    dimBurst();
   }
 
   if(t>72&&!fired.g){
@@ -702,8 +810,13 @@ audio.addEventListener('timeupdate',()=>{
     addLine('[LIVE] Distance estimate: < 1 meter','danger');
     addLine('[LIVE] DO NOT LOOK BEHIND YOU.','danger');
     setSignal(19);
+    archiveStatus.textContent='CRITICAL PROXIMITY';
+    archiveStatus.style.color='#ff3030';
     setAlert('IT IS DIRECTLY BEHIND YOU','critical');
     glitch();
+    interferenceBurst();
+    chromaticBurst();
+    tearBurst();
   }
 });
 

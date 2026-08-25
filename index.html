@@ -284,6 +284,80 @@ button{
   .alert{min-height:54px}
   .terminal{height:145px;margin-top:8px}
 }
+
+.signalRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin:0 0 12px;
+  font-size:11px;
+  color:#8d8d8d;
+}
+.linkState{
+  color:#63ff72;
+  font-weight:bold;
+  letter-spacing:.06em;
+  white-space:nowrap;
+}
+.linkState .dot{
+  display:inline-block;
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#63ff72;
+  box-shadow:0 0 10px rgba(99,255,114,.7);
+  margin-right:6px;
+}
+.linkState.bad{
+  color:#ff3030;
+}
+.linkState.bad .dot{
+  background:#ff3030;
+  box-shadow:0 0 10px rgba(255,48,48,.75);
+}
+.signalWrap{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:235px;
+}
+.meter{
+  flex:1;
+  height:8px;
+  background:#171717;
+  border:1px solid #303030;
+  overflow:hidden;
+}
+.meterFill{
+  height:100%;
+  width:81%;
+  background:#63ff72;
+  box-shadow:0 0 10px rgba(99,255,114,.45);
+  transition:width .25s ease, background .25s ease;
+}
+.typing::after{
+  content:"▋";
+  margin-left:3px;
+  animation:cursorBlink .55s steps(1) infinite;
+}
+@keyframes cursorBlink{50%{opacity:0}}
+.corrupt{
+  color:#ff3b3b !important;
+  text-shadow:1px 0 #00ffff,-1px 0 #ff00ff;
+  animation:corruptJitter .08s linear 5;
+}
+@keyframes corruptJitter{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-1px)}
+  50%{transform:translateX(2px)}
+  75%{transform:translateX(-2px)}
+  100%{transform:translateX(0)}
+}
+@media (max-width:600px){
+  .signalRow{font-size:10px;gap:8px}
+  .signalWrap{min-width:190px}
+}
+
 </style>
 </head>
 <body>
@@ -303,6 +377,15 @@ button{
       <div>LOCATION: <b>WEST HALLWAY</b></div>
       <div>TIMESTAMP: <b id="timestamp">02:13:00</b></div>
       <div>STATUS: <b id="archiveStatus">ARCHIVED</b></div>
+    </div>
+
+    <div class="signalRow">
+      <div class="linkState" id="linkState"><span class="dot"></span> LINK ESTABLISHED</div>
+      <div class="signalWrap">
+        <span>SIGNAL</span>
+        <div class="meter"><div class="meterFill" id="meterFill"></div></div>
+        <b id="signalPct">81%</b>
+      </div>
     </div>
 
     <div class="warning">
@@ -343,6 +426,9 @@ const timestamp=document.getElementById('timestamp');
 const panel=document.getElementById('panel');
 const title=document.getElementById('title');
 const subtitle=document.getElementById('subtitle');
+const meterFill=document.getElementById('meterFill');
+const signalPct=document.getElementById('signalPct');
+const linkState=document.getElementById('linkState');
 
 let started=false;
 let fired={};
@@ -370,6 +456,50 @@ function flash(){
 function setAlert(text,mode=''){
   alertBox.textContent=text;
   alertBox.className='alert'+(mode?' '+mode:'');
+}
+
+function setSignal(pct){
+  pct=Math.max(0,Math.min(100,Math.round(pct)));
+  signalPct.textContent=pct+'%';
+  meterFill.style.width=pct+'%';
+  if(pct<45){
+    meterFill.style.background='#ff3030';
+    meterFill.style.boxShadow='0 0 10px rgba(255,48,48,.55)';
+  }else if(pct<70){
+    meterFill.style.background='#ffd84a';
+    meterFill.style.boxShadow='0 0 10px rgba(255,216,74,.45)';
+  }else{
+    meterFill.style.background='#63ff72';
+    meterFill.style.boxShadow='0 0 10px rgba(99,255,114,.45)';
+  }
+}
+
+function typeLine(text,cls='',speed=24){
+  const line=document.createElement('div');
+  line.className='termline '+cls+' typing';
+  terminal.insertBefore(line,terminal.firstChild);
+  while(terminal.children.length>9){
+    terminal.removeChild(terminal.lastChild);
+  }
+  let i=0;
+  const timer=setInterval(()=>{
+    line.textContent=text.slice(0,i++);
+    if(i>text.length){
+      clearInterval(timer);
+      line.classList.remove('typing');
+    }
+  },speed);
+}
+
+function corruptFlash(text){
+  const line=document.createElement('div');
+  line.className='termline corrupt';
+  line.textContent=text;
+  terminal.insertBefore(line,terminal.firstChild);
+  while(terminal.children.length>9){
+    terminal.removeChild(terminal.lastChild);
+  }
+  setTimeout(()=>line.remove(),1200);
 }
 
 playBtn.addEventListener('click',async()=>{
@@ -402,6 +532,7 @@ playBtn.addEventListener('click',async()=>{
 const consoleEvents = [
   [4.0,  '[02:13:04] Carrier noise above archived baseline.'],
   [7.0,  '[02:13:07] Automatic gain correction engaged.'],
+  [11.5, '[02:13:11] Receiver microphone access: NOT AVAILABLE.'],
   [13.0, '[02:13:13] Packet loss detected: 6%.'],
   [15.5, '[02:13:15] Unknown pulse repeating at 1.8 sec intervals.'],
   [21.0, '[02:13:21] Return-channel handshake requested.'],
@@ -409,7 +540,8 @@ const consoleEvents = [
   [26.0, '[02:13:26] Handshake repeated without authorization.'],
   [31.0, '[LIVE] Clock source no longer matches archive.'],
   [34.0, '[LIVE] Local receiver microphone response detected.'],
-  [36.5, '[LIVE] Acoustic return exceeds playback source.'],
+  [36.0, '[LIVE] MICROPHONE PERMISSION: NOT REQUESTED.'],
+  [38.5, '[LIVE] Acoustic return exceeds playback source.'],
   [41.0, '[LIVE] Unidentified low-frequency movement detected.'],
   [44.0, '[LIVE] Movement source cannot be isolated.'],
   [46.5, '[LIVE] West hallway channel reopened.'],
@@ -428,11 +560,52 @@ let consoleEventIndex = 0;
 audio.addEventListener('timeupdate',()=>{
   const t=audio.currentTime;
 
+  // Signal fluctuates continuously.
+  const drift = 81 - t*0.42 + Math.sin(t*1.7)*7 + Math.sin(t*.41)*5;
+  setSignal(drift);
+
+  // Once live, the timestamp becomes an actual running clock.
+  if(t>=28){
+    const baseSeconds = 2*3600 + 13*60;
+    const liveSeconds = baseSeconds + Math.floor(t-28);
+    const hh = String(Math.floor(liveSeconds/3600)%24).padStart(2,'0');
+    const mm = String(Math.floor(liveSeconds/60)%60).padStart(2,'0');
+    const ss = String(liveSeconds%60).padStart(2,'0');
+    timestamp.textContent = hh+':'+mm+':'+ss+' LIVE';
+    timestamp.classList.add('liveState');
+  }
+
   while(consoleEventIndex < consoleEvents.length && t >= consoleEvents[consoleEventIndex][0]){
     const msg = consoleEvents[consoleEventIndex][1];
     const danger = msg.includes('[LIVE]') || msg.includes('Unknown') || msg.includes('denied') || msg.includes('BEHIND');
     addLine(msg, danger ? 'danger' : '');
     consoleEventIndex++;
+  }
+
+  if(t>17&&!fired.corrupt){
+    fired.corrupt=true;
+    corruptFlash('S̷O̴U̷R̸C̴E̶ ̵I̷D̵E̷N̸T̷I̸F̷I̶C̴A̸T̴I̶O̷N̵ ̶F̵A̶I̵L̴E̸D̷');
+  }
+
+  if(t>33&&!fired.linkbad){
+    fired.linkbad=true;
+    linkState.classList.add('bad');
+    linkState.innerHTML='<span class="dot"></span> EXTERNAL LINK';
+  }
+
+  if(t>47&&!fired.typed1){
+    fired.typed1=true;
+    typeLine('[LIVE] The return channel is listening.', 'danger', 28);
+  }
+
+  if(t>67&&!fired.typed2){
+    fired.typed2=true;
+    typeLine('[LIVE] It can see the screen.', 'danger', 36);
+  }
+
+  if(t>74&&!fired.typed3){
+    fired.typed3=true;
+    typeLine('[LIVE] Do not let it know you saw this message.', 'danger', 34);
   }
 
   if(t>10&&!fired.a){
@@ -486,6 +659,11 @@ audio.addEventListener('timeupdate',()=>{
   if(t>60&&!fired.f){
     fired.f=true;
     addLine('[LIVE] Movement detected behind listener.','danger');
+    archiveStatus.textContent='ACTIVE INCIDENT';
+    archiveStatus.classList.remove('liveState');
+    archiveStatus.style.color='#ff3030';
+    linkState.innerHTML='<span class="dot"></span> RECEIVER COMPROMISED';
+    linkState.classList.add('bad');
     setAlert('THERE IS SOMETHING BEHIND YOU','critical');
     glitch();
   }
@@ -501,6 +679,7 @@ audio.addEventListener('timeupdate',()=>{
     fired.h=true;
     addLine('[LIVE] Distance estimate: < 1 meter','danger');
     addLine('[LIVE] DO NOT LOOK BEHIND YOU.','danger');
+    setSignal(19);
     setAlert('IT IS DIRECTLY BEHIND YOU','critical');
     glitch();
   }
